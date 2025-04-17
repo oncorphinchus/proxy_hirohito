@@ -8,7 +8,12 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   experimental: {
-    optimizeCss: true,
+    // Configure optimizeCss with critters to avoid issues
+    optimizeCss: {
+      minify: true,
+      inlineCritical: true,
+      critters: { preload: 'swap' }
+    },
     scrollRestoration: true,
   },
   // Disable TypeScript type checking to fix Chart.js typing issues in production
