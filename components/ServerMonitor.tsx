@@ -17,6 +17,7 @@ import {
   Tooltip,
   Legend,
   TooltipItem,
+  ChartOptions,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
@@ -68,6 +69,19 @@ export default function ServerMonitor() {
   const lastRefreshRef = useRef<Date>(new Date());
   const [lastRefreshString, setLastRefreshString] = useState<string>('');
   const dataFetchingInProgressRef = useRef<boolean>(false);
+
+  // Format time from now - client-side only function
+  const timeAgo = useCallback((date: Date) => {
+    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+    
+    if (seconds < 60) return `${seconds} seconds ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    const days = Math.floor(hours / 24);
+    return `${days} day${days !== 1 ? 's' : ''} ago`;
+  }, []);
 
   const fetchLatestStats = useCallback(async () => {
     try {
@@ -187,54 +201,57 @@ export default function ServerMonitor() {
   }, [historicalStats]);
   
   // Memoized chart options
-  const chartOptions = useMemo(() => ({
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top' as const,
+  const chartOptions = useMemo(() => {
+    // @ts-ignore -- Chart.js typing issues with scales configuration
+    return {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top' as const,
+        },
+        tooltip: {
+          mode: 'index' as const,
+          intersect: false,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          titleColor: '#1a202c',
+          bodyColor: '#4a5568',
+          borderColor: '#e2e8f0',
+          borderWidth: 1,
+          padding: 10,
+          boxPadding: 5,
+          usePointStyle: true,
+          callbacks: {
+            label: function(context: TooltipItem<'line'>) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.y !== null) {
+                label += context.parsed.y.toFixed(1) + '%';
+              }
+              return label;
+            }
+          }
+        }
       },
-      tooltip: {
-        mode: 'index' as const,
-        intersect: false,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        titleColor: '#1a202c',
-        bodyColor: '#4a5568',
-        borderColor: '#e2e8f0',
-        borderWidth: 1,
-        padding: 10,
-        boxPadding: 5,
-        usePointStyle: true,
-        callbacks: {
-          label: function(context: TooltipItem<'line'>) {
-            let label = context.dataset.label || '';
-            if (label) {
-              label += ': ';
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            callback: function(value: number) {
+              return value + '%';
             }
-            if (context.parsed.y !== null) {
-              label += context.parsed.y.toFixed(1) + '%';
-            }
-            return label;
           }
         }
+      },
+      interaction: {
+        mode: 'nearest' as const,
+        axis: 'x' as const,
+        intersect: false
       }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 100,
-        ticks: {
-          callback: function(value: any) {
-            return value + '%';
-          }
-        }
-      }
-    },
-    interaction: {
-      mode: 'nearest' as const,
-      axis: 'x' as const,
-      intersect: false
-    }
-  }), []);
+    };
+  }, []);
   
   // Calculate trends only when necessary and cache results
   const calculateTrend = useCallback((current: number, dataKey: keyof ServerStats): { value: string; label: string; isPositive: boolean; } | undefined => {
@@ -251,19 +268,6 @@ export default function ServerMonitor() {
     }
     return undefined;
   }, [historicalStats]);
-  
-  // Format time from now - client-side only function
-  const timeAgo = useCallback((date: Date) => {
-    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-    
-    if (seconds < 60) return `${seconds} seconds ago`;
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
-    const days = Math.floor(hours / 24);
-    return `${days} day${days !== 1 ? 's' : ''} ago`;
-  }, []);
 
   return (
     <div className="space-y-6">

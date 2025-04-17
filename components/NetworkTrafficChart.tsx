@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { ServerStats } from '../types';
 import { formatBytes } from '../utils/formatBytes';
-import { TooltipItem } from 'chart.js';
+import { TooltipItem, ChartOptions } from 'chart.js';
 
 interface NetworkTrafficChartProps {
   historicalStats: ServerStats[];
@@ -93,6 +93,7 @@ export default function NetworkTrafficChart({ historicalStats }: NetworkTrafficC
     ]
   };
 
+  // @ts-ignore -- Chart.js typing issues with scales configuration
   const options = {
     responsive: true,
     maintainAspectRatio: false,
