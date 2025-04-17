@@ -2,36 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles */
-.luxury-card {
-  @apply bg-white rounded-xl shadow-sm p-6 transition-all duration-300 hover:shadow-md;
+:root {
+  --primary-dark: #1a202c;
+  --primary-light: #edf2f7;
+  --accent-blue: #3182ce;
+  --accent-green: #38a169;
+  --accent-gold: #d69e2e;
+  --accent-red: #e53e3e;
+  --card-background: #f8fafc;
+  --card-hover: #f1f5f9;
+  --border-radius: 0.5rem;
+  --transition-normal: 0.3s ease-in-out;
+  --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --box-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.status-active {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
+@layer base {
+  body {
+    @apply text-slate-800 bg-slate-50;
   }
-  50% {
-    opacity: 0.6;
-  }
 }
 
-/* Fade in animation */
-.fade-in {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
+@layer components {
+  /* Luxurious card styles */
+  .luxury-card {
+    @apply bg-white rounded-xl p-6 transition-all duration-300 border border-gray-100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .luxury-card:hover {
+    @apply transform;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  /* Status indicator with pulse animation */
+  .status-active {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+  
+  /* Fade in animation */
+  .fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 } 
