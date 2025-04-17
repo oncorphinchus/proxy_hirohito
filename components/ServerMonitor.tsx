@@ -456,7 +456,10 @@ export default function ServerMonitor() {
                   Resource Usage History
                 </h3>
                 <div className="py-2">
-                  {chartData && <Line data={chartData} options={chartOptions} />}
+                  {chartData && (
+                    // @ts-expect-error - Chart.js typing issues with scales configuration
+                    <Line data={chartData} options={chartOptions} />
+                  )}
                 </div>
               </div>
               

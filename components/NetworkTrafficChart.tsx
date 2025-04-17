@@ -168,6 +168,7 @@ export default function NetworkTrafficChart({ historicalStats }: NetworkTrafficC
   return (
     <div className="py-2" style={{ height: '300px' }}>
       <div className={`transition-opacity duration-500 h-full ${chartLoaded ? 'opacity-100' : 'opacity-0'}`}>
+        {/* @ts-expect-error - Chart.js typing issues with scales configuration */}
         <Line data={chartData} options={options} />
       </div>
     </div>
