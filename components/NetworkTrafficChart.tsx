@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { ServerStats } from '../types';
 import { formatBytes } from '../utils/formatBytes';
+import { TooltipItem } from 'chart.js';
 
 interface NetworkTrafficChartProps {
   historicalStats: ServerStats[];
@@ -117,7 +118,7 @@ export default function NetworkTrafficChart({ historicalStats }: NetworkTrafficC
         boxPadding: 5,
         usePointStyle: true,
         callbacks: {
-          label: function(context: any) {
+          label: function(context: TooltipItem<'line'>) {
             let label = context.dataset.label || '';
             if (label) {
               label += ': ';
@@ -147,7 +148,7 @@ export default function NetworkTrafficChart({ historicalStats }: NetworkTrafficC
           color: 'rgba(226, 232, 240, 0.5)',
         },
         ticks: {
-          callback: function(value: any) {
+          callback: function(value: number) {
             return formatBytes(value) + '/s';
           },
           font: {

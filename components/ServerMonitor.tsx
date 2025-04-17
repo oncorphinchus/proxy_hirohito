@@ -16,6 +16,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  TooltipItem,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
@@ -35,6 +36,28 @@ ChartJS.register(
   Legend
 );
 
+// Component definition with icons
+const CpuIcon = () => (
+  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+  </svg>
+);
+CpuIcon.displayName = 'CpuIcon';
+
+const RamIcon = () => (
+  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+RamIcon.displayName = 'RamIcon';
+
+const DiskIcon = () => (
+  <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+  </svg>
+);
+DiskIcon.displayName = 'DiskIcon';
+
 export default function ServerMonitor() {
   const [currentStats, setCurrentStats] = useState<ServerStats | null>(null);
   const [historicalStats, setHistoricalStats] = useState<ServerStats[]>([]);
@@ -45,25 +68,6 @@ export default function ServerMonitor() {
   const lastRefreshRef = useRef<Date>(new Date());
   const [lastRefreshString, setLastRefreshString] = useState<string>('');
   const dataFetchingInProgressRef = useRef<boolean>(false);
-
-  // Memoized icons to prevent re-renders
-  const CpuIcon = useMemo(() => () => (
-    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-    </svg>
-  ), []);
-
-  const RamIcon = useMemo(() => () => (
-    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  ), []);
-
-  const DiskIcon = useMemo(() => () => (
-    <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-    </svg>
-  ), []);
 
   const fetchLatestStats = useCallback(async () => {
     try {
@@ -77,9 +81,9 @@ export default function ServerMonitor() {
       if (fetchError) throw fetchError;
       setCurrentStats(data);
       lastRefreshRef.current = new Date();
-    } catch (err: any) {
+    } catch (err: Error | unknown) {
       console.error("Error fetching latest stats:", err);
-      setError(err.message || 'Failed to fetch latest stats');
+      setError(err instanceof Error ? err.message : 'Failed to fetch latest stats');
     }
   }, []);
 
@@ -94,7 +98,7 @@ export default function ServerMonitor() {
 
       if (fetchError) throw fetchError;
       setHistoricalStats(data || []);
-    } catch (err: any) {
+    } catch (err: Error | unknown) {
       console.error("Error fetching historical stats:", err);
     }
   }, []);
@@ -128,7 +132,7 @@ export default function ServerMonitor() {
     // Update the time string every 10 seconds
     const interval = setInterval(updateTimeString, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [timeAgo]);
 
   // Data fetch interval
   useEffect(() => {
@@ -201,7 +205,7 @@ export default function ServerMonitor() {
         boxPadding: 5,
         usePointStyle: true,
         callbacks: {
-          label: function(context: any) {
+          label: function(context: TooltipItem<'line'>) {
             let label = context.dataset.label || '';
             if (label) {
               label += ': ';

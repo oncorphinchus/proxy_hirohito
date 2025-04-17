@@ -21,7 +21,11 @@ export default function ConnectionInfo({ className = '' }: ConnectionInfoProps) 
     const startTime = performance.now();
     try {
       // Ping the Supabase API
-      const { data, error } = await supabase.from('server_stats').select('created_at').limit(1);
+      const { error } = await supabase
+        .from('server_stats')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1);
       
       if (error) {
         throw error;
