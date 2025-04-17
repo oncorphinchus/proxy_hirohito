@@ -1,26 +1,115 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary-dark: #1a202c;
+  --primary-light: #edf2f7;
+  --accent-blue: #3182ce;
+  --accent-green: #38a169;
+  --accent-gold: #d69e2e;
+  --accent-red: #e53e3e;
+  --card-background: #f8fafc;
+  --card-hover: #f1f5f9;
+  --border-radius: 0.5rem;
+  --transition-normal: 0.3s ease-in-out;
+  --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --box-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply text-slate-800 bg-slate-50;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Luxurious card styles */
+  .luxury-card {
+    @apply bg-white rounded-xl p-6 transition-all duration-300 border border-gray-100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+  
+  .luxury-card:hover {
+    @apply transform;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  /* Progress bar animations */
+  .progress-bar {
+    @apply bg-gray-200 rounded-full overflow-hidden;
+  }
+  
+  .progress-value {
+    @apply h-full rounded-full transition-all duration-1000 ease-out;
+    animation: shimmer 2s infinite;
+    background: linear-gradient(
+      90deg,
+      rgba(49, 130, 206, 1) 0%,
+      rgba(79, 160, 236, 1) 50%,
+      rgba(49, 130, 206, 1) 100%
+    );
+    background-size: 200% 100%;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
+  
+  /* Pulse animation for status indicators */
+  .status-active {
+    @apply relative inline-flex;
+  }
+  
+  .status-active::before {
+    @apply h-full w-full absolute rounded-full;
+    content: '';
+    animation: pulse-animation 2s infinite;
+  }
+  
+  @keyframes pulse-animation {
+    0% {
+      box-shadow: 0 0 0 0 rgba(56, 161, 105, 0.5);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(56, 161, 105, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(56, 161, 105, 0);
+    }
+  }
+  
+  /* Fade in animation for cards */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  
+  .fade-in-delay-1 {
+    animation: fadeIn 0.5s ease-out 0.1s both;
+  }
+  
+  .fade-in-delay-2 {
+    animation: fadeIn 0.5s ease-out 0.2s both;
+  }
+  
+  .fade-in-delay-3 {
+    animation: fadeIn 0.5s ease-out 0.3s both;
+  }
 }

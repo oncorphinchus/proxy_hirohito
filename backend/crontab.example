@@ -1,0 +1,15 @@
+# Example crontab configuration for the Linode Server Monitor
+# To use this, run 'crontab -e' and add the following lines (adjusted to your paths)
+
+# Environment variables needed for the script
+SUPABASE_URL=your_supabase_url
+SUPABASE_SERVICE_KEY=your_supabase_service_key
+
+# Run the monitoring script every 5 minutes
+*/5 * * * * /path/to/monitor.py >> /var/log/server-monitor.log 2>&1
+
+# Alternatively, if you want to use a virtual environment:
+# */5 * * * * cd /path/to/project && /path/to/venv/bin/python monitor.py >> /var/log/server-monitor.log 2>&1
+
+# Tip: You can test your cron job with:
+# run-parts --test /etc/cron.d 
